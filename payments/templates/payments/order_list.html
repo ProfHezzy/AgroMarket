@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Orders - AgroMarket{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">My Orders</h1>
+            <p class="text-gray-600 mt-2">Track your purchase history and order status</p>
+        </div>
+
+        {% if orders %}
+            <div class="space-y-6">
+                {% for order in orders %}
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Order {{ order.order_number }}</h3>
+                                <p class="text-sm text-gray-500">{{ order.created_at|date:"F j, Y" }}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                                    {{ order.get_status_display }}
+                                </span>
+                                <p class="text-lg font-semibold text-green-600 mt-1">${{ order.grand_total }}</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Order Items -->
+                        <div class="space-y-3 mb-4">
+                            {% for item in order.items.all %}
+                            <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-apple-alt text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">{{ item.product.name }}</p>
+                                        <p class="text-sm text-gray-500">{{ item.quantity }} x ${{ item.unit_price }}</p>
+                                    </div>
+                                </div>
+                                <p class="font-medium text-gray-900">${{ item.total_price }}</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Order Actions -->
+                        <div class="flex justify-between items-center">
+                            <div class="text-sm text-gray-600">
+                                <span>{{ order.items.count }} item{{ order.items.count|pluralize }}</span>
+                                <span class="mx-2">•</span>
+                                <span>{{ order.get_status_display }}</span>
+                            </div>
+                            <a href="{% url 'payments:order_detail' order.id %}" 
+                               class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-200">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- No Orders -->
+            <div class="text-center py-16">
+                <div class="mb-6">
+                    <i class="fas fa-shopping-bag text-6xl text-gray-300"></i>
+                </div>
+                <h3 class="text-2xl font-semibold text-gray-600 mb-4">No Orders Yet</h3>
+                <p class="text-gray-500 mb-6 max-w-md mx-auto">
+                    You haven't placed any orders yet. Start shopping to see your order history here.
+                </p>
+                <a href="{% url 'marketplace:product_list' %}" 
+                   class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200">
+                    <i class="fas fa-shopping-bag mr-2"></i>
+                    Start Shopping
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

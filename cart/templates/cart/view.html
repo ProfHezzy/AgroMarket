@@ -1,0 +1,423 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shopping Cart - AgroMarket{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Shopping Cart</h1>
+        <p class="text-gray-600">Review your items before checkout</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Cart Items -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <!-- Cart Header -->
+                <div class="bg-gray-50 px-6 py-4 border-b">
+                    <h2 class="text-lg font-semibold text-gray-900">Cart Items ({{ cart_items|length }})</h2>
+                </div>
+                
+                <!-- Cart Items List -->
+                <div class="divide-y divide-gray-200">
+                    {% if cart_items %}
+                        {% for item in cart_items %}
+                            <div class="p-6" data-product-id="{{ item.product.id }}">
+                                <div class="flex items-center space-x-4">
+                                    <!-- Product Image -->
+                                    <div class="w-20 h-20 bg-gradient-to-br from-green-100 to-green-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        {% if item.product.image %}
+                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-full h-full object-cover rounded-lg">
+                                        {% else %}
+                                            <i class="fas fa-apple-alt text-2xl text-green-600"></i>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Product Details -->
+                                    <div class="flex-1">
+                                        <h3 class="text-lg font-semibold text-gray-900">{{ item.product.name }}</h3>
+                                        <p class="text-gray-600">{{ item.product.description|truncatewords:10 }}</p>
+                                        <div class="flex items-center space-x-4 mt-2">
+                                            <span class="text-sm text-gray-500">Seller: {{ item.product.seller.username|default:"Unknown" }}</span>
+                                            <span class="text-sm text-green-600 font-medium">In Stock</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Quantity Controls -->
+                                    <div class="flex items-center space-x-3">
+                                        <button class="quantity-minus bg-gray-200 hover:bg-gray-300 text-gray-700 w-8 h-8 rounded-md flex items-center justify-center transition duration-200" data-product-id="{{ item.product.id }}">
+                                            <i class="fas fa-minus text-sm"></i>
+                                        </button>
+                                        <span id="quantity-{{ item.product.id }}" class="w-12 text-center font-medium">{{ item.quantity }}</span>
+                                        <button class="quantity-plus bg-gray-200 hover:bg-gray-300 text-gray-700 w-8 h-8 rounded-md flex items-center justify-center transition duration-200" data-product-id="{{ item.product.id }}">
+                                            <i class="fas fa-plus text-sm"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Price and Actions -->
+                                    <div class="text-right">
+                                        <div id="price-{{ item.product.id }}" class="text-lg font-bold text-gray-900">${{ item.product.price|floatformat:2 }}</div>
+                                        <div class="text-sm text-gray-500">per {{ item.product.unit|default:"unit" }}</div>
+                                        <button class="remove-item text-red-600 hover:text-red-700 text-sm mt-2 transition duration-200" data-product-id="{{ item.product.id }}">
+                                            <i class="fas fa-trash mr-1"></i>
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <!-- Empty Cart -->
+                        <div class="p-12 text-center">
+                            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-shopping-cart text-3xl text-gray-400"></i>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
+                            <p class="text-gray-600 mb-6">Looks like you haven't added any items to your cart yet.</p>
+                            <a href="{% url 'marketplace:product_list' %}" 
+                               class="bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 transition duration-200">
+                                <i class="fas fa-shopping-bag mr-2"></i>
+                                Start Shopping
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Continue Shopping -->
+                <div class="bg-gray-50 px-6 py-4">
+                    <a href="{% url 'marketplace:product_list' %}" 
+                       class="text-green-600 hover:text-green-700 font-medium transition duration-200">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Order Summary -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-lg shadow-md p-6 sticky top-24">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
+                
+                <!-- Summary Details -->
+                <div class="space-y-3 mb-6">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Subtotal ({{ cart_items|length }} items)</span>
+                        <span class="font-medium">${{ total|floatformat:2 }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Shipping</span>
+                        <span class="font-medium">${{ shipping|floatformat:2 }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Tax</span>
+                        <span class="font-medium">${{ tax|floatformat:2 }}</span>
+                    </div>
+                    <div class="border-t pt-3">
+                        <div class="flex justify-between">
+                            <span class="text-lg font-semibold text-gray-900">Total</span>
+                            <span class="text-lg font-bold text-green-600">${{ grand_total|floatformat:2 }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Promo Code -->
+                <div class="mb-6">
+                    <label for="promo-code" class="block text-sm font-medium text-gray-700 mb-2">Promo Code</label>
+                    <div class="flex space-x-2">
+                        <input type="text" id="promo-code" 
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                               placeholder="Enter code">
+                        <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition duration-200">
+                            Apply
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Checkout Button -->
+                <a href="{% url 'cart:checkout' %}" 
+                   class="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-700 transition duration-200 text-center block">
+                    <i class="fas fa-lock mr-2"></i>
+                    Proceed to Checkout
+                </a>
+                
+                <!-- Security Notice -->
+                <div class="mt-4 text-center">
+                    <p class="text-xs text-gray-500">
+                        <i class="fas fa-shield-alt mr-1"></i>
+                        Secure checkout with SSL encryption
+                    </p>
+                </div>
+                
+                <!-- Payment Methods -->
+                <div class="mt-6">
+                    <p class="text-sm font-medium text-gray-700 mb-2">We Accept</p>
+                    <div class="flex space-x-2">
+                        <div class="bg-gray-100 p-2 rounded">
+                            <i class="fab fa-cc-visa text-blue-600 text-xl"></i>
+                        </div>
+                        <div class="bg-gray-100 p-2 rounded">
+                            <i class="fab fa-cc-mastercard text-red-600 text-xl"></i>
+                        </div>
+                        <div class="bg-gray-100 p-2 rounded">
+                            <i class="fab fa-cc-paypal text-blue-500 text-xl"></i>
+                        </div>
+                        <div class="bg-gray-100 p-2 rounded">
+                            <i class="fab fa-cc-stripe text-purple-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recently Viewed -->
+    <div class="mt-12">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">You Might Also Like</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for i in "1234" %}
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
+                    <div class="relative">
+                        <div class="w-full h-48 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+                            <i class="fas fa-apple-alt text-4xl text-green-600"></i>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Related Product {{ i }}</h3>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xl font-bold text-green-600">${{ i }}4.99</span>
+                            <button class="bg-green-600 text-white py-1 px-3 rounded-md hover:bg-green-700 transition duration-200">
+                                <i class="fas fa-plus mr-1"></i>
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Cart functionality
+let cartData = {};
+
+// Initialize cart data from backend
+function initializeCartData() {
+    // This will be populated from the backend cart items
+    const cartItems = document.querySelectorAll('[data-product-id]');
+    cartItems.forEach(item => {
+        const productId = item.dataset.productId;
+        const quantityElement = item.querySelector('.w-12');
+        const priceElement = item.querySelector('.text-lg.font-bold');
+        
+        if (quantityElement && priceElement) {
+            const quantity = parseInt(quantityElement.textContent);
+            const price = parseFloat(priceElement.textContent.replace('$', ''));
+            const name = item.querySelector('h3').textContent;
+            
+            cartData[productId] = {
+                quantity: quantity,
+                price: price,
+                name: name
+            };
+        }
+    });
+}
+
+function updateQuantity(productId, change) {
+    const currentQuantity = cartData[productId].quantity;
+    const newQuantity = Math.max(1, currentQuantity + change);
+    
+    // Send AJAX request to backend
+    fetch('/cart/update/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            product_id: productId,
+            quantity: newQuantity
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update the data
+            cartData[productId].quantity = newQuantity;
+            
+            // Update the display
+            document.getElementById(`quantity-${productId}`).textContent = newQuantity;
+            
+            // Update the price display
+            const totalPrice = (cartData[productId].price * newQuantity).toFixed(2);
+            document.getElementById(`price-${productId}`).textContent = `$${totalPrice}`;
+            
+            // Show notification
+            AgroMarket.showNotification(`Updated ${cartData[productId].name} quantity to ${newQuantity}`, 'success');
+            
+            // Reload page to update cart summary
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            AgroMarket.showNotification(`❌ Error: ${data.error}`, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error updating quantity:', error);
+        AgroMarket.showNotification('❌ Error updating quantity. Please try again.', 'error');
+    });
+}
+
+function removeItem(productId) {
+    if (confirm(`Are you sure you want to remove ${cartData[productId].name} from your cart?`)) {
+        // Send AJAX request to backend
+        fetch('/cart/remove/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                product_id: productId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Remove from data
+                const itemName = cartData[productId].name;
+                delete cartData[productId];
+                
+                // Remove from display
+                const itemElement = document.querySelector(`[data-product-id="${productId}"]`);
+                if (itemElement) {
+                    itemElement.style.opacity = '0';
+                    itemElement.style.transform = 'translateX(-100%)';
+                    
+                    setTimeout(() => {
+                        itemElement.remove();
+                        // Reload page to update cart summary
+                        window.location.reload();
+                    }, 300);
+                }
+                
+                // Show notification
+                AgroMarket.showNotification(`${itemName} removed from cart`, 'success');
+            } else {
+                AgroMarket.showNotification(`❌ Error: ${data.error}`, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error removing item:', error);
+            AgroMarket.showNotification('❌ Error removing item. Please try again.', 'error');
+        });
+    }
+}
+
+// Add to cart functionality for related products
+function addToCart(productName, price) {
+    // Generate a new ID
+    const newId = Math.max(...Object.keys(cartData).map(Number)) + 1;
+    
+    // Add to cart data
+    cartData[newId] = {
+        quantity: 1,
+        price: price,
+        name: productName
+    };
+    
+    // Show notification
+    AgroMarket.showNotification(`${productName} added to cart!`, 'success');
+    
+    // Update cart summary
+    updateCartSummary();
+}
+
+// Apply promo code functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize cart data
+    initializeCartData();
+    
+    // Add event listeners for quantity controls
+    document.querySelectorAll('.quantity-minus').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            updateQuantity(productId, -1);
+        });
+    });
+    
+    document.querySelectorAll('.quantity-plus').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            updateQuantity(productId, 1);
+        });
+    });
+    
+    // Add event listeners for remove buttons
+    document.querySelectorAll('.remove-item').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            removeItem(productId);
+        });
+    });
+    
+    const promoButton = document.querySelector('#promo-code + button');
+    if (promoButton) {
+        promoButton.addEventListener('click', function() {
+            const promoCode = document.getElementById('promo-code').value.trim().toUpperCase();
+            
+            if (!promoCode) {
+                AgroMarket.showNotification('Please enter a promo code', 'warning');
+                return;
+            }
+            
+            // Sample promo codes
+            const promoCodes = {
+                'SAVE10': { type: 'percentage', value: 10, description: '10% off' },
+                'WELCOME': { type: 'fixed', value: 5, description: '$5 off' },
+                'FREESHIP': { type: 'shipping', value: 0, description: 'Free shipping' }
+            };
+            
+            if (promoCodes[promoCode]) {
+                const promo = promoCodes[promoCode];
+                AgroMarket.showNotification(`Promo code applied: ${promo.description}`, 'success');
+            } else {
+                AgroMarket.showNotification('Invalid promo code', 'error');
+            }
+        });
+    }
+    
+    // Add click handlers to related product buttons
+    document.querySelectorAll('.grid .bg-green-600').forEach((button, index) => {
+        button.addEventListener('click', function() {
+            const productName = `Related Product ${index + 1}`;
+            const price = parseFloat(this.parentElement.querySelector('.text-green-600').textContent.replace('$', ''));
+            addToCart(productName, price);
+        });
+    });
+});
+
+// Helper function to get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

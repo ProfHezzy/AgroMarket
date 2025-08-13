@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ thread.title }} - Forum - AgroMarket{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-8" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{% url 'core:home' %}" class="text-gray-700 hover:text-blue-600">
+                    <i class="fas fa-home mr-1"></i>
+                    Home
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <a href="{% url 'forum:thread_list' %}" class="text-gray-700 hover:text-blue-600">Forum</a>
+                </div>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <span class="text-gray-500">{{ thread.title }}</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Thread Header -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ thread.title }}</h1>
+        <div class="flex items-center space-x-4 text-sm text-gray-500">
+            <span>Started by <strong>{{ thread.author|default:"Sample User" }}</strong></span>
+            <span>2 hours ago</span>
+            <span>5 replies</span>
+            <span>23 views</span>
+        </div>
+    </div>
+
+    <!-- Original Post -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-start space-x-4">
+            <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <span class="text-white font-semibold">OP</span>
+            </div>
+            <div class="flex-1">
+                <div class="flex items-center space-x-2 mb-2">
+                    <h3 class="font-semibold text-gray-900">{{ thread.author|default:"Original Poster" }}</h3>
+                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Thread Starter</span>
+                </div>
+                <p class="text-gray-600 mb-4">
+                    This is the original post content. It contains the main question or topic that started this discussion. 
+                    Community members can reply with their thoughts, advice, and experiences.
+                </p>
+                <div class="flex items-center space-x-4 text-sm text-gray-500">
+                    <span>2 hours ago</span>
+                    <button class="hover:text-blue-600">
+                        <i class="fas fa-thumbs-up mr-1"></i>
+                        Like (3)
+                    </button>
+                    <button class="hover:text-blue-600">
+                        <i class="fas fa-reply mr-1"></i>
+                        Reply
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Replies -->
+    <div class="space-y-6">
+        {% for i in "12345" %}
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-start space-x-4">
+                    <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span class="text-white font-semibold">U{{ i }}</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <h3 class="font-semibold text-gray-900">User {{ i }}</h3>
+                            {% if i == "1" %}
+                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Expert</span>
+                            {% endif %}
+                        </div>
+                        <p class="text-gray-600 mb-4">
+                            This is a sample reply to the discussion. Each reply provides additional insights, 
+                            answers, or questions related to the original topic. The community can engage 
+                            through likes and further replies.
+                        </p>
+                        <div class="flex items-center space-x-4 text-sm text-gray-500">
+                            <span>{{ i }} hour{{ i|pluralize }} ago</span>
+                            <button class="hover:text-blue-600">
+                                <i class="fas fa-thumbs-up mr-1"></i>
+                                Like ({{ i }})
+                            </button>
+                            <button class="hover:text-blue-600">
+                                <i class="fas fa-reply mr-1"></i>
+                                Reply
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Reply Form -->
+    <div class="bg-white rounded-lg shadow-md p-6 mt-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Add Your Reply</h3>
+        <form>
+            <div class="mb-4">
+                <textarea rows="4" 
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
+                          placeholder="Share your thoughts, experiences, or ask follow-up questions..."></textarea>
+            </div>
+            <div class="flex justify-between items-center">
+                <div class="text-sm text-gray-500">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Be respectful and constructive in your replies
+                </div>
+                <button type="submit" 
+                        class="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 transition duration-200">
+                    <i class="fas fa-paper-plane mr-2"></i>
+                    Post Reply
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

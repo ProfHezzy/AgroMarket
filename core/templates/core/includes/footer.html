@@ -1,0 +1,101 @@
+{% load static %}
+
+<footer class="bg-gray-800 text-white py-12 mt-auto">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <!-- Company Info -->
+            <div class="space-y-4">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-leaf text-2xl text-green-400"></i>
+                    <span class="text-xl font-bold">AgroMarket</span>
+                </div>
+                <p class="text-gray-300">
+                    Your trusted agricultural marketplace connecting farmers, buyers, and agricultural enthusiasts worldwide.
+                </p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-green-400 transition duration-200">
+                        <i class="fab fa-facebook text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-green-400 transition duration-200">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-green-400 transition duration-200">
+                        <i class="fab fa-instagram text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-green-400 transition duration-200">
+                        <i class="fab fa-linkedin text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Quick Links -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                <ul class="space-y-2">
+                    <li><a href="/" class="text-gray-300 hover:text-green-400 transition duration-200">Home</a></li>
+                    <li><a href="/marketplace/" class="text-gray-300 hover:text-green-400 transition duration-200">Marketplace</a></li>
+                    <li><a href="/forum/" class="text-gray-300 hover:text-green-400 transition duration-200">Forum</a></li>
+                    <li><a href="/insights/" class="text-gray-300 hover:text-green-400 transition duration-200">Insights</a></li>
+                    <li><a href="/about/" class="text-gray-300 hover:text-green-400 transition duration-200">About Us</a></li>
+                </ul>
+            </div>
+            
+            <!-- Categories -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Categories</h3>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-gray-300 hover:text-green-400 transition duration-200">Fresh Produce</a></li>
+                    <li><a href="#" class="text-gray-300 hover:text-green-400 transition duration-200">Grains & Cereals</a></li>
+                    <li><a href="#" class="text-gray-300 hover:text-green-400 transition duration-200">Dairy Products</a></li>
+                    <li><a href="#" class="text-gray-300 hover:text-green-400 transition duration-200">Farm Equipment</a></li>
+                    <li><a href="#" class="text-gray-300 hover:text-green-400 transition duration-200">Seeds & Plants</a></li>
+                </ul>
+            </div>
+            
+            <!-- Contact Info -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                <ul class="space-y-2">
+                    <li class="flex items-center space-x-2">
+                        <i class="fas fa-envelope text-green-400"></i>
+                        <span class="text-gray-300">support@agromarket.com</span>
+                    </li>
+                    <li class="flex items-center space-x-2">
+                        <i class="fas fa-phone text-green-400"></i>
+                        <span class="text-gray-300">+1 (555) 123-4567</span>
+                    </li>
+                    <li class="flex items-center space-x-2">
+                        <i class="fas fa-map-marker-alt text-green-400"></i>
+                        <span class="text-gray-300">123 Farm Street, Agriculture City</span>
+                    </li>
+                </ul>
+                
+                <!-- Newsletter Signup -->
+                <div class="mt-6">
+                    <h4 class="font-semibold mb-2">Newsletter</h4>
+                    <form class="flex">
+                        <input type="email" 
+                               placeholder="Your email" 
+                               class="flex-1 px-3 py-2 bg-gray-700 text-white rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-400">
+                        <button type="submit" 
+                                class="bg-green-600 text-white px-4 py-2 rounded-r-lg hover:bg-green-700 transition duration-200">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Bar -->
+        <div class="border-t border-gray-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+            <p class="text-gray-400 text-sm">
+                &copy; 2024 AgroMarket. All rights reserved.
+            </p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="#" class="text-gray-400 hover:text-green-400 text-sm transition duration-200">Privacy Policy</a>
+                <a href="#" class="text-gray-400 hover:text-green-400 text-sm transition duration-200">Terms of Service</a>
+                <a href="/contact/" class="text-gray-400 hover:text-green-400 text-sm transition duration-200">Contact</a>
+            </div>
+        </div>
+    </div>
+</footer>

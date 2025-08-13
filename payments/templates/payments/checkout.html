@@ -1,0 +1,479 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout - AgroMarket{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">
+                {% if buy_now %}
+                    Quick Purchase
+                {% else %}
+                    Secure Checkout
+                {% endif %}
+            </h1>
+            <p class="text-gray-600 mt-2">
+                {% if buy_now %}
+                    Complete your purchase quickly and securely
+                {% else %}
+                    Complete your purchase with confidence
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Checkout Form -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6">Order Summary</h2>
+                    
+                    <!-- Cart Items -->
+                    <div class="space-y-4 mb-6">
+                        {% for item in cart_items %}
+                        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-apple-alt text-2xl text-green-600"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-900">{{ item.product.name }}</h3>
+                                    <p class="text-sm text-gray-500">{{ item.quantity }} x ${{ item.product.price }}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-semibold text-gray-900">${{ item.total_price }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Totals -->
+                    <div class="border-t border-gray-200 pt-4 space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Subtotal:</span>
+                            <span class="font-medium">${{ subtotal }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Shipping:</span>
+                            <span class="font-medium">${{ shipping }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Tax:</span>
+                            <span class="font-medium">${{ tax }}</span>
+                        </div>
+                        <div class="flex justify-between text-lg font-semibold border-t border-gray-200 pt-2">
+                            <span>Total:</span>
+                            <span class="text-green-600">${{ total }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Method Selection -->
+                <div class="bg-white rounded-lg shadow-md p-6 mt-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6">Payment Method</h2>
+                    
+                    <div class="space-y-4">
+                        {% for method in payment_methods %}
+                        <label class="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-green-300 transition-colors">
+                            <input type="radio" name="payment_method" value="{{ method.id }}" class="text-green-600 focus:ring-green-500" required>
+                            <div class="ml-4 flex items-center">
+                                <i class="{{ method.icon_class }} text-2xl text-gray-600 mr-3"></i>
+                                <div>
+                                    <p class="font-medium text-gray-900">{{ method.name }}</p>
+                                    <p class="text-sm text-gray-500">{{ method.description }}</p>
+                                    {% if method.processing_fee_percentage > 0 or method.processing_fee_fixed > 0 %}
+                                    <p class="text-xs text-orange-600">
+                                        Fee: {{ method.processing_fee_percentage }}% + ${{ method.processing_fee_fixed }}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Account Balance Option -->
+                {% if user_balance %}
+                <div class="bg-white rounded-lg shadow-md p-6 mt-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Use Account Balance</h3>
+                            <p class="text-sm text-gray-600">Available: ${{ user_balance.amount }}</p>
+                        </div>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="use-balance" class="text-green-600 focus:ring-green-500">
+                            <span class="ml-2 text-sm text-gray-700">Use balance first</span>
+                        </label>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Shipping Information -->
+                <div class="bg-white rounded-lg shadow-md p-6 mt-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6">Shipping Information</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                            <input type="text" id="shipping-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                            <input type="tel" id="shipping-phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500" required>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                            <textarea id="shipping-address" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500" required></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">City</label>
+                            <input type="text" id="shipping-city" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">ZIP Code</label>
+                            <input type="text" id="shipping-zip" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Billing Information -->
+                <div class="bg-white rounded-lg shadow-md p-6 mt-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6">Billing Information</h2>
+                    
+                    <div class="flex items-center mb-4">
+                        <input type="checkbox" id="same-as-shipping" class="text-green-600 focus:ring-green-500" checked>
+                        <label for="same-as-shipping" class="ml-2 text-sm text-gray-700">Same as shipping address</label>
+                    </div>
+                    
+                    <div id="billing-fields" class="hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                                <input type="text" id="billing-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                                <input type="tel" id="billing-phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                                <textarea id="billing-address" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">City</label>
+                                <input type="text" id="billing-city" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">ZIP Code</label>
+                                <input type="text" id="billing-zip" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Notice -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
+                    <div class="flex items-start">
+                        <i class="fas fa-shield-alt text-blue-600 mt-1 mr-3"></i>
+                        <div>
+                            <h3 class="text-sm font-medium text-blue-900">Secure Payment</h3>
+                            <p class="text-sm text-blue-700 mt-1">
+                                Your payment information is encrypted and secure. We use industry-standard SSL encryption to protect your data.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Place Order Button -->
+                <div class="mt-8">
+                    <button id="place-order-btn" 
+                            class="w-full bg-green-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-green-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                            data-buy-now="{{ buy_now|yesno:'true,false' }}"
+                            data-product-id="{{ product_id|default:'' }}"
+                            data-quantity="{{ quantity|default:1 }}">
+                        <i class="fas fa-lock mr-2"></i>
+                        {% if buy_now %}
+                            Buy Now Securely
+                        {% else %}
+                            Place Order Securely
+                        {% endif %}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Order Summary Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-md p-6 sticky top-24">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Order Summary</h3>
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Items ({{ cart_items|length }}):</span>
+                            <span>${{ subtotal }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Shipping:</span>
+                            <span>${{ shipping }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Tax:</span>
+                            <span>${{ tax }}</span>
+                        </div>
+                        <div class="border-t border-gray-200 pt-3">
+                            <div class="flex justify-between font-semibold">
+                                <span>Total:</span>
+                                <span class="text-green-600 text-lg">${{ total }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Features -->
+                    <div class="mt-6 space-y-3">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <i class="fas fa-shield-alt text-green-600 mr-2"></i>
+                            SSL Encrypted
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <i class="fas fa-lock text-green-600 mr-2"></i>
+                            Secure Payment
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <i class="fas fa-undo text-green-600 mr-2"></i>
+                            Money Back Guarantee
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Checkout JavaScript loading...');
+    
+    // Handle same as shipping checkbox
+    const sameAsShippingCheckbox = document.getElementById('same-as-shipping');
+    const billingFields = document.getElementById('billing-fields');
+    
+    if (sameAsShippingCheckbox && billingFields) {
+        sameAsShippingCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                billingFields.classList.add('hidden');
+                // Clear billing fields
+                document.getElementById('billing-name').value = '';
+                document.getElementById('billing-phone').value = '';
+                document.getElementById('billing-address').value = '';
+                document.getElementById('billing-city').value = '';
+                document.getElementById('billing-zip').value = '';
+            } else {
+                billingFields.classList.remove('hidden');
+            }
+        });
+    }
+    
+    // Handle place order button
+    const placeOrderBtn = document.getElementById('place-order-btn');
+    if (placeOrderBtn) {
+        placeOrderBtn.addEventListener('click', function() {
+            processCheckout();
+        });
+    }
+    
+    function processCheckout() {
+        // Validate form
+        if (!validateForm()) {
+            return;
+        }
+        
+        // Get form data
+        const formData = {
+            payment_method_id: document.querySelector('input[name="payment_method"]:checked')?.value,
+            use_balance: document.getElementById('use-balance')?.checked || false,
+            shipping_address: getShippingAddress(),
+            billing_address: getBillingAddress(),
+            notes: ''
+        };
+        
+        // Add buy now data if applicable
+        const buyNow = placeOrderBtn.dataset.buyNow === 'true';
+        const productId = placeOrderBtn.dataset.productId;
+        const quantity = placeOrderBtn.dataset.quantity;
+
+        if (buyNow) {
+            formData.buy_now = true;
+            formData.product_id = productId;
+            formData.quantity = quantity;
+        }
+        
+        // Show loading state
+        placeOrderBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+        placeOrderBtn.disabled = true;
+        
+        // Determine endpoint based on checkout type
+        const endpoint = buyNow ? `/payments/buy-now/${productId}/${quantity}/` : '/payments/checkout/';
+        
+        // Send request
+        fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.order_number) {
+                    // Order completed with balance
+                    showNotification('✅ Order placed successfully!', 'success');
+                    setTimeout(() => {
+                        window.location.href = `/payments/orders/${data.order_number}/`;
+                    }, 2000);
+                } else if (data.payment_id) {
+                    // Redirect to payment gateway
+                    window.location.href = data.redirect_url;
+                }
+            } else {
+                showNotification(`❌ ${data.error}`, 'error');
+                placeOrderBtn.innerHTML = '<i class="fas fa-lock mr-2"></i>Place Order Securely';
+                placeOrderBtn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Checkout error:', error);
+            showNotification('❌ An error occurred. Please try again.', 'error');
+            placeOrderBtn.innerHTML = '<i class="fas fa-lock mr-2"></i>Place Order Securely';
+            placeOrderBtn.disabled = false;
+        });
+    }
+    
+    function validateForm() {
+        // Check if payment method is selected
+        if (!document.querySelector('input[name="payment_method"]:checked')) {
+            showNotification('❌ Please select a payment method.', 'error');
+            return false;
+        }
+        
+        // Check if shipping address is filled
+        const shippingFields = ['shipping-name', 'shipping-phone', 'shipping-address', 'shipping-city', 'shipping-zip'];
+        for (const fieldId of shippingFields) {
+            const field = document.getElementById(fieldId);
+            if (!field.value.trim()) {
+                showNotification(`❌ Please fill in ${field.placeholder || field.name}.`, 'error');
+                field.focus();
+                return false;
+            }
+        }
+        
+        // Check billing address if not same as shipping
+        if (!document.getElementById('same-as-shipping').checked) {
+            const billingFields = ['billing-name', 'billing-phone', 'billing-address', 'billing-city', 'billing-zip'];
+            for (const fieldId of billingFields) {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) {
+                    showNotification(`❌ Please fill in billing ${field.placeholder || field.name}.`, 'error');
+                    field.focus();
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+    
+    function getShippingAddress() {
+        return `${document.getElementById('shipping-name').value}\n${document.getElementById('shipping-phone').value}\n${document.getElementById('shipping-address').value}\n${document.getElementById('shipping-city').value}, ${document.getElementById('shipping-zip').value}`;
+    }
+    
+    function getBillingAddress() {
+        if (document.getElementById('same-as-shipping').checked) {
+            return getShippingAddress();
+        }
+        return `${document.getElementById('billing-name').value}\n${document.getElementById('billing-phone').value}\n${document.getElementById('billing-address').value}\n${document.getElementById('billing-city').value}, ${document.getElementById('billing-zip').value}`;
+    }
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    function showNotification(message, type = 'success') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            max-width: 300px;
+            font-family: system-ui, -apple-system, sans-serif;
+            font-size: 14px;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        `;
+        
+        // Set colors based on type
+        if (type === 'success') {
+            notification.style.backgroundColor = '#10b981';
+            notification.style.color = 'white';
+        } else if (type === 'error') {
+            notification.style.backgroundColor = '#ef4444';
+            notification.style.color = 'white';
+        } else {
+            notification.style.backgroundColor = '#3b82f6';
+            notification.style.color = 'white';
+        }
+        
+        notification.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span>${message}</span>
+                <button onclick="this.parentElement.parentElement.remove()" 
+                        style="margin-left: 12px; background: none; border: none; color: inherit; cursor: pointer; font-size: 16px;">
+                    ✕
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+        
+        // Auto remove after 4 seconds
+        setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 300);
+        }, 4000);
+    }
+    
+    console.log('✅ Checkout JavaScript loaded successfully');
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - AgroMarket{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Profile Header -->
+    <div class="bg-gradient-to-r from-green-600 to-green-800 text-white rounded-lg p-8 mb-8">
+        <div class="flex items-center space-x-6">
+            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center">
+                <span class="text-3xl font-bold text-green-600">{{ user.first_name.0|default:'U' }}</span>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold">{{ user.get_full_name|default:user.username }}</h1>
+                <p class="text-green-100">{{ user.email }}</p>
+                <div class="flex items-center space-x-4 mt-2">
+                    <span class="bg-green-700 px-3 py-1 rounded-full text-sm">
+                        {% if user.is_seller %}Seller{% else %}Buyer{% endif %}
+                    </span>
+                    <span class="text-green-100">Member since {{ user.date_joined|date:"M Y" }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Profile Stats -->
+        <div class="lg:col-span-1 space-y-6">
+            <!-- Stats Cards -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Profile Stats</h2>
+                <div class="space-y-4">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Orders Placed</span>
+                        <span class="font-semibold">12</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Reviews Given</span>
+                        <span class="font-semibold">8</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Forum Posts</span>
+                        <span class="font-semibold">23</span>
+                    </div>
+                    {% if user.is_seller %}
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Products Listed</span>
+                            <span class="font-semibold">15</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Total Sales</span>
+                            <span class="font-semibold text-green-600">$1,234</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
+                <div class="space-y-3">
+                    <a href="{% url 'users:profile_edit' %}" 
+                       class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-200 text-center block">
+                        <i class="fas fa-edit mr-2"></i>
+                        Edit Profile
+                    </a>
+                    <a href="{% url 'users:change_password' %}" 
+                       class="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-200 text-center block">
+                        <i class="fas fa-key mr-2"></i>
+                        Change Password
+                    </a>
+                    {% if user.is_seller %}
+                        <a href="{% url 'marketplace:add_product' %}" 
+                           class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200 text-center block">
+                            <i class="fas fa-plus mr-2"></i>
+                            Add Product
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Recent Orders -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold text-gray-900">Recent Orders</h2>
+                    <a href="{% url 'cart:orders' %}" class="text-green-600 hover:text-green-700 text-sm font-medium">
+                        View All
+                    </a>
+                </div>
+                <div class="space-y-4">
+                    {% for i in "123" %}
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">Order #100{{ i }}</h3>
+                                    <p class="text-sm text-gray-600">{{ i }} item{{ i|pluralize }} • ${{ i }}9.99</p>
+                                </div>
+                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                                    {% if i == "1" %}Delivered{% elif i == "2" %}Shipped{% else %}Processing{% endif %}
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-500">Ordered {{ i }} day{{ i|pluralize }} ago</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Wishlist -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold text-gray-900">Wishlist</h2>
+                    <a href="{% url 'marketplace:wishlist' %}" class="text-green-600 hover:text-green-700 text-sm font-medium">
+                        View All
+                    </a>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {% for i in "12" %}
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-apple-alt text-green-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="font-semibold text-gray-900">Wishlist Item {{ i }}</h3>
+                                    <p class="text-sm text-gray-600">${{ i }}9.99</p>
+                                </div>
+                                <button class="text-red-500 hover:text-red-600">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Recent Forum Activity -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold text-gray-900">Recent Forum Activity</h2>
+                    <a href="{% url 'forum:thread_list' %}" class="text-green-600 hover:text-green-700 text-sm font-medium">
+                        View Forum
+                    </a>
+                </div>
+                <div class="space-y-4">
+                    {% for i in "12" %}
+                        <div class="border-l-4 border-blue-500 pl-4">
+                            <h3 class="font-semibold text-gray-900">Sample Forum Post {{ i }}</h3>
+                            <p class="text-sm text-gray-600">Posted in Crop Management • {{ i }} hour{{ i|pluralize }} ago</p>
+                            <p class="text-sm text-gray-500 mt-1">{{ i }} replies • {{ i|add:5 }} views</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
