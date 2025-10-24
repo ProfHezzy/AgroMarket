@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Marketplace - AgroMarket{% endblock %}
+
+{% block content %}
+<!-- Marketplace Header -->
+<section class="bg-gradient-to-r from-green-600 to-green-800 text-white py-12">
+    <div class="container mx-auto px-4">
+        <div class="text-center">
+            <h1 class="text-4xl font-bold mb-4">Agricultural Marketplace</h1>
+            <p class="text-xl text-green-100 mb-8">Discover fresh produce, farming equipment, and agricultural products</p>
+            
+            <!-- Search Bar -->
+            <div class="max-w-2xl mx-auto">
+                <form action="{% url 'marketplace:search_products' %}" method="GET" class="flex">
+                    <input type="text" 
+                           name="q" 
+                           placeholder="Search for products, categories, or sellers..." 
+                           value="{{ request.GET.q }}"
+                           class="flex-1 px-4 py-3 rounded-l-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-300">
+                    <button type="submit" 
+                            class="bg-green-700 hover:bg-green-800 px-6 py-3 rounded-r-lg transition duration-200">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="py-8 bg-white border-b">
+    <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Shop by Category</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            <a href="#" class="flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-green-50 hover:text-green-600 transition duration-200">
+                <i class="fas fa-apple-alt text-3xl mb-2 text-green-600"></i>
+                <span class="text-sm font-medium">Fresh Fruits</span>
+            </a>
+            <a href="#" class="flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-green-50 hover:text-green-600 transition duration-200">
+                <i class="fas fa-carrot text-3xl mb-2 text-orange-600"></i>
+                <span class="text-sm font-medium">Vegetables</span>
+            </a>
+            <a href="#" class="flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-green-50 hover:text-green-600 transition duration-200">
+                <i class="fas fa-seedling text-3xl mb-2 text-green-600"></i>
+                <span class="text-sm font-medium">Grains</span>
+            </a>
+            <a href="#" class="flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-green-50 hover:text-green-600 transition duration-200">
+                <i class="fas fa-cheese text-3xl mb-2 text-yellow-600"></i>
+                <span class="text-sm font-medium">Dairy</span>
+            </a>
+            <a href="#" class="flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-green-50 hover:text-green-600 transition duration-200">
+                <i class="fas fa-tools text-3xl mb-2 text-gray-600"></i>
+                <span class="text-sm font-medium">Equipment</span>
+            </a>
+            <a href="#" class="flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-green-50 hover:text-green-600 transition duration-200">
+                <i class="fas fa-spa text-3xl mb-2 text-green-600"></i>
+                <span class="text-sm font-medium">Seeds</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Filters and Products -->
+<section class="py-8">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Sidebar Filters -->
+            <div class="lg:w-1/4">
+                <div class="bg-white rounded-lg shadow-md p-6 sticky top-24">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Filters</h3>
+                    
+                    <!-- Price Range -->
+                    <div class="mb-6">
+                        <h4 class="font-medium text-gray-700 mb-2">Price Range</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <span class="ml-2 text-sm text-gray-600">Under $10</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <span class="ml-2 text-sm text-gray-600">$10 - $50</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <span class="ml-2 text-sm text-gray-600">$50 - $100</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <span class="ml-2 text-sm text-gray-600">Over $100</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Location -->
+                    <div class="mb-6">
+                        <h4 class="font-medium text-gray-700 mb-2">Location</h4>
+                        <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500">
+                            <option>All Locations</option>
+                            <option>Local (within 50 miles)</option>
+                            <option>Regional (within 200 miles)</option>
+                            <option>National</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Seller Type -->
+                    <div class="mb-6">
+                        <h4 class="font-medium text-gray-700 mb-2">Seller Type</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <span class="ml-2 text-sm text-gray-600">Verified Farmers</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <span class="ml-2 text-sm text-gray-600">Organic Certified</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <span class="ml-2 text-sm text-gray-600">Local Producers</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-200">
+                        Apply Filters
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Products Grid -->
+            <div class="lg:w-3/4">
+                <!-- Sort Options -->
+                <div class="flex justify-between items-center mb-6">
+                    <p class="text-gray-600">Showing <span class="font-semibold">1-12</span> of <span class="font-semibold">156</span> products</p>
+                    <select class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        <option>Sort by: Featured</option>
+                        <option>Price: Low to High</option>
+                        <option>Price: High to Low</option>
+                        <option>Newest First</option>
+                        <option>Best Rated</option>
+                    </select>
+                </div>
+                
+                <!-- Products Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for product in products %}
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
+                            <div class="relative">
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover">
+                                {% else %}
+                                    <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                                        <i class="fas fa-image text-4xl text-gray-400"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="absolute top-2 left-2">
+                                    <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-semibold">Fresh</span>
+                                </div>
+                                <div class="absolute top-2 right-2">
+                                    <button class="bg-white rounded-full p-2 shadow-md hover:bg-gray-50 transition duration-200">
+                                        <i class="fas fa-heart text-gray-400 hover:text-red-500"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ product.name }}</h3>
+                                <p class="text-gray-600 text-sm mb-2">{{ product.description|truncatewords:10 }}</p>
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-2xl font-bold text-green-600">${{ product.price }}</span>
+                                    <span class="text-sm text-gray-500">per {{ product.unit }}</span>
+                                </div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center">
+                                        <div class="flex text-yellow-400">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star-half-alt"></i>
+                                        </div>
+                                        <span class="text-sm text-gray-600 ml-1">(4.5)</span>
+                                    </div>
+                                    <span class="text-sm text-gray-500">{{ product.location }}</span>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="flex-1 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-200">
+                                        <i class="fas fa-shopping-cart mr-1"></i>
+                                        Add to Cart
+                                    </button>
+                                    <a href="{% url 'marketplace:product_detail' product.id %}" 
+                                       class="bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-200">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <!-- Sample Products when no products exist -->
+                        {% for i in "123456789012" %}
+                            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
+                                <div class="relative">
+                                    <div class="w-full h-48 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+                                        <i class="fas fa-apple-alt text-4xl text-green-600"></i>
+                                    </div>
+                                    <div class="absolute top-2 left-2">
+                                        <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-semibold">Fresh</span>
+                                    </div>
+                                    <div class="absolute top-2 right-2">
+                                        <button class="bg-white rounded-full p-2 shadow-md hover:bg-gray-50 transition duration-200">
+                                            <i class="fas fa-heart text-gray-400 hover:text-red-500"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Sample Product {{ forloop.counter }}</h3>
+                                    <p class="text-gray-600 text-sm mb-2">Fresh organic produce from local farms. High quality guaranteed.</p>
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="text-2xl font-bold text-green-600">${{ forloop.counter }}9.99</span>
+                                        <span class="text-sm text-gray-500">per lb</span>
+                                    </div>
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center">
+                                            <div class="flex text-yellow-400">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star-half-alt"></i>
+                                            </div>
+                                            <span class="text-sm text-gray-600 ml-1">(4.5)</span>
+                                        </div>
+                                        <span class="text-sm text-gray-500">Local Farm</span>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="flex-1 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-200">
+                                            <i class="fas fa-shopping-cart mr-1"></i>
+                                            Add to Cart
+                                        </button>
+                                        <a href="{% url 'marketplace:product_detail' forloop.counter %}" 
+                                           class="bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-200">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                <div class="mt-8 flex justify-center">
+                    <nav class="flex space-x-2">
+                        <a href="#" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition duration-200">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                        <a href="#" class="px-3 py-2 bg-green-600 text-white rounded-md">1</a>
+                        <a href="#" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition duration-200">2</a>
+                        <a href="#" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition duration-200">3</a>
+                        <a href="#" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition duration-200">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="bg-green-600 text-white py-12">
+    <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold mb-4">Want to Sell Your Products?</h2>
+        <p class="text-xl text-green-100 mb-8">Join thousands of farmers and producers selling on AgroMarket</p>
+        <a href="{% url 'marketplace:add_product' %}" 
+           class="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-green-50 transition duration-200">
+            <i class="fas fa-plus mr-2"></i>
+            Start Selling
+        </a>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Add to cart functionality
+function addToCart(button, productName, price) {
+    // Show loading state
+    const originalContent = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Adding...';
+    button.disabled = true;
+    
+    // Simulate API call
+    setTimeout(() => {
+        // Reset button
+        button.innerHTML = originalContent;
+        button.disabled = false;
+        
+        // Show success notification
+        AgroMarket.showNotification(`${productName} added to cart!`, 'success');
+        
+        // Update cart count in header (if element exists)
+        const cartCount = document.getElementById('cart-count');
+        if (cartCount) {
+            const currentCount = parseInt(cartCount.textContent) || 0;
+            cartCount.textContent = currentCount + 1;
+        }
+    }, 500);
+}
+
+// Add event listeners when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click handlers to all "Add to Cart" buttons
+    document.querySelectorAll('button').forEach(button => {
+        if (button.textContent.includes('Add to Cart')) {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Extract product info from the card
+                const card = this.closest('.bg-white');
+                const productName = card.querySelector('h3').textContent;
+                const priceText = card.querySelector('.text-green-600').textContent;
+                const price = parseFloat(priceText.replace(', '').replace(',', ''));
+                
+                addToCart(this, productName, price);
+            });
+        }
+    });
+    
+    // Add wishlist functionality
+    document.querySelectorAll('.fa-heart').forEach(heartIcon => {
+        heartIcon.parentElement.addEventListener('click', function(e) {
+            e.preventDefault();
+            const heart = this.querySelector('.fa-heart');
+            
+            if (heart.classList.contains('text-red-500')) {
+                heart.classList.remove('text-red-500');
+                heart.classList.add('text-gray-400');
+                AgroMarket.showNotification('Removed from wishlist', 'info');
+            } else {
+                heart.classList.remove('text-gray-400');
+                heart.classList.add('text-red-500');
+                AgroMarket.showNotification('Added to wishlist', 'success');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

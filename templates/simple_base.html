@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AgroMarket - Agricultural Marketplace{% endblock %}</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Simple Header -->
+    <header class="bg-green-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-leaf text-2xl"></i>
+                    <h1 class="text-2xl font-bold">AgroMarket</h1>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="/" class="hover:text-green-200 transition duration-200">
+                        <i class="fas fa-home mr-1"></i> Home
+                    </a>
+                    <a href="/marketplace/" class="hover:text-green-200 transition duration-200">
+                        <i class="fas fa-store mr-1"></i> Marketplace
+                    </a>
+                    <a href="/forum/" class="hover:text-green-200 transition duration-200">
+                        <i class="fas fa-comments mr-1"></i> Forum
+                    </a>
+                    <a href="/insights/" class="hover:text-green-200 transition duration-200">
+                        <i class="fas fa-chart-line mr-1"></i> Insights
+                    </a>
+                    <a href="/cart/" class="hover:text-green-200 transition duration-200">
+                        <i class="fas fa-shopping-cart mr-1"></i> Cart
+                    </a>
+                    <a href="/users/login/" class="bg-green-700 px-4 py-2 rounded hover:bg-green-800 transition duration-200">
+                        <i class="fas fa-sign-in-alt mr-1"></i> Login
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Simple Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2024 AgroMarket. All rights reserved.</p>
+            <p class="text-gray-400 mt-2">Connecting agriculture worldwide 🌱</p>
+        </div>
+    </footer>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

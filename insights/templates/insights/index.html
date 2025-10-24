@@ -1,0 +1,341 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Market Insights - AgroMarket{% endblock %}
+
+{% block content %}
+<!-- Insights Header -->
+<section class="bg-gradient-to-r from-purple-600 to-purple-800 text-white py-12">
+    <div class="container mx-auto px-4">
+        <div class="text-center">
+            <h1 class="text-4xl font-bold mb-4">Market Insights</h1>
+            <p class="text-xl text-purple-100 mb-8">Real-time market data, trends, and analytics for informed decisions</p>
+        </div>
+    </div>
+</section>
+
+<!-- Key Metrics -->
+<section class="py-8 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-green-100">Total Products</p>
+                        <p class="text-3xl font-bold">{{ total_products|default:"1,234" }}</p>
+                    </div>
+                    <i class="fas fa-box text-4xl text-green-200"></i>
+                </div>
+                <p class="text-green-100 text-sm mt-2">+12% from last month</p>
+            </div>
+            
+            <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-blue-100">Active Sellers</p>
+                        <p class="text-3xl font-bold">{{ active_sellers|default:"567" }}</p>
+                    </div>
+                    <i class="fas fa-users text-4xl text-blue-200"></i>
+                </div>
+                <p class="text-blue-100 text-sm mt-2">+8% from last month</p>
+            </div>
+            
+            <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-yellow-100">Avg. Price</p>
+                        <p class="text-3xl font-bold">${{ avg_price|default:"45.99" }}</p>
+                    </div>
+                    <i class="fas fa-dollar-sign text-4xl text-yellow-200"></i>
+                </div>
+                <p class="text-yellow-100 text-sm mt-2">-3% from last month</p>
+            </div>
+            
+            <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-purple-100">Total Orders</p>
+                        <p class="text-3xl font-bold">{{ total_orders|default:"2,890" }}</p>
+                    </div>
+                    <i class="fas fa-shopping-cart text-4xl text-purple-200"></i>
+                </div>
+                <p class="text-purple-100 text-sm mt-2">+15% from last month</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Charts Section -->
+<section class="py-8 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Price Trends Chart -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Price Trends</h3>
+                <div class="h-64 flex items-center justify-center bg-gray-100 rounded">
+                    <canvas id="priceChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+            
+            <!-- Sales Volume Chart -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Sales Volume</h3>
+                <div class="h-64 flex items-center justify-center bg-gray-100 rounded">
+                    <canvas id="salesChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Category Performance -->
+<section class="py-8 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Category Distribution -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Category Distribution</h3>
+                    <div class="h-64 flex items-center justify-center bg-gray-100 rounded">
+                        <canvas id="categoryChart" width="300" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Top Categories -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Top Performing Categories</h3>
+                    <div class="space-y-4">
+                        {% for category in top_categories %}
+                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-apple-alt text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">{{ category.name }}</h4>
+                                        <p class="text-sm text-gray-600">{{ category.product_count }} products</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-semibold text-green-600">${{ category.total_sales }}</p>
+                                    <p class="text-sm text-gray-600">Total sales</p>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <!-- Sample categories when no data exists -->
+                            {% for i in "12345" %}
+                                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-{% if forloop.counter == 1 %}apple-alt{% elif forloop.counter == 2 %}carrot{% elif forloop.counter == 3 %}seedling{% elif forloop.counter == 4 %}cheese{% else %}tools{% endif %} text-white"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold text-gray-900">
+                                                {% if forloop.counter == 1 %}Fresh Fruits
+                                                {% elif forloop.counter == 2 %}Vegetables
+                                                {% elif forloop.counter == 3 %}Grains
+                                                {% elif forloop.counter == 4 %}Dairy
+                                                {% else %}Equipment
+                                                {% endif %}
+                                            </h4>
+                                            <p class="text-sm text-gray-600">{{ forloop.counter }}23 products</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-semibold text-green-600">${{ forloop.counter }}5,{{ forloop.counter }}67</p>
+                                        <p class="text-sm text-gray-600">Total sales</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Top Products -->
+<section class="py-8 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Top Selling Products</h2>
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sales</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for product in detailed_products %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-apple-alt text-green-600"></i>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">{{ product.name }}</div>
+                                            <div class="text-sm text-gray-500">SKU: {{ product.sku }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ product.category }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    ${{ product.price }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ product.sales }} units
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
+                                    ${{ product.revenue }}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <!-- Sample products when no data exists -->
+                            {% for i in "12345" %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                                <i class="fas fa-{% if forloop.counter == 1 %}apple-alt{% elif forloop.counter == 2 %}carrot{% elif forloop.counter == 3 %}seedling{% elif forloop.counter == 4 %}cheese{% else %}tools{% endif %} text-green-600"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">
+                                                    {% if forloop.counter == 1 %}Organic Apples
+                                                    {% elif forloop.counter == 2 %}Fresh Tomatoes
+                                                    {% elif forloop.counter == 3 %}Wheat Grain
+                                                    {% elif forloop.counter == 4 %}Raw Milk
+                                                    {% else %}Tractor Parts
+                                                    {% endif %}
+                                                </div>
+                                                <div class="text-sm text-gray-500">SKU: PRD{{ forloop.counter }}0{{ forloop.counter }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {% if forloop.counter == 1 %}Fresh Fruits{% elif forloop.counter == 2 %}Vegetables{% elif forloop.counter == 3 %}Grains{% elif forloop.counter == 4 %}Dairy{% else %}Equipment{% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        ${{ forloop.counter }}9.99
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ forloop.counter }}{{ forloop.counter }}7 units
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
+                                        ${{ forloop.counter }},{{ forloop.counter }}89
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Export Options -->
+<section class="py-8 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="bg-gray-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Export Data</h3>
+            <p class="text-gray-600 mb-4">Download detailed reports and analytics data</p>
+            <div class="flex space-x-4">
+                <a href="{% url 'insights:export_data' %}?format=csv" 
+                   class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-200">
+                    <i class="fas fa-file-csv mr-2"></i>
+                    Export CSV
+                </a>
+                <a href="{% url 'insights:export_data' %}?format=pdf" 
+                   class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition duration-200">
+                    <i class="fas fa-file-pdf mr-2"></i>
+                    Export PDF
+                </a>
+                <a href="{% url 'insights:export_data' %}?format=json" 
+                   class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200">
+                    <i class="fas fa-file-code mr-2"></i>
+                    Export JSON
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Initialize charts when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Price Trends Chart
+    const priceCtx = document.getElementById('priceChart').getContext('2d');
+    new Chart(priceCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Average Price',
+                data: [25, 30, 28, 35, 32, 38],
+                borderColor: 'rgb(34, 197, 94)',
+                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    // Sales Volume Chart
+    const salesCtx = document.getElementById('salesChart').getContext('2d');
+    new Chart(salesCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Sales Volume',
+                data: [120, 150, 180, 200, 170, 220],
+                backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                borderColor: 'rgb(59, 130, 246)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    // Category Distribution Chart
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Fruits', 'Vegetables', 'Grains', 'Dairy', 'Equipment'],
+            datasets: [{
+                data: [30, 25, 20, 15, 10],
+                backgroundColor: [
+                    'rgba(34, 197, 94, 0.8)',
+                    'rgba(251, 146, 60, 0.8)',
+                    'rgba(234, 179, 8, 0.8)',
+                    'rgba(59, 130, 246, 0.8)',
+                    'rgba(156, 163, 175, 0.8)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+});
+</script>
+{% endblock %}

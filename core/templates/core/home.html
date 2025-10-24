@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AgroMarket - Your Agricultural Marketplace{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-gradient-to-r from-green-600 to-green-800 text-white py-20">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="space-y-6">
+                <h1 class="text-4xl lg:text-6xl font-bold leading-tight">
+                    Your Trusted <span class="text-green-200">Agricultural</span> Marketplace
+                </h1>
+                <p class="text-xl text-green-100">
+                    Connect with farmers, discover fresh produce, and join a thriving community of agricultural enthusiasts.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="{% url 'marketplace:product_list' %}" 
+                       class="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-green-50 transition duration-150 ease-in-out text-center">
+                        <i class="fas fa-store mr-2"></i>
+                        Browse Marketplace
+                    </a>
+                    <a href="{% url 'users:register' %}" 
+                       class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition duration-150 ease-in-out text-center">
+                        <i class="fas fa-user-plus mr-2"></i>
+                        Join Community
+                    </a>
+                </div>
+            </div>
+            <div class="hidden lg:block">
+                <img src="{% static 'images/hero-illustration.svg' %}" alt="Agricultural Marketplace" class="w-full h-auto">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Why Choose AgroMarket?</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                We provide a comprehensive platform for all your agricultural needs, from fresh produce to farming equipment.
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="text-center p-6 rounded-lg hover:shadow-lg transition duration-150 ease-in-out">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-leaf text-2xl text-green-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Fresh Produce</h3>
+                <p class="text-gray-600">Direct from farms to your table. Quality guaranteed.</p>
+            </div>
+            
+            <div class="text-center p-6 rounded-lg hover:shadow-lg transition duration-150 ease-in-out">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-users text-2xl text-blue-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Community Forum</h3>
+                <p class="text-gray-600">Connect with farmers and share knowledge.</p>
+            </div>
+            
+            <div class="text-center p-6 rounded-lg hover:shadow-lg transition duration-150 ease-in-out">
+                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-chart-line text-2xl text-yellow-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Market Insights</h3>
+                <p class="text-gray-600">Real-time market data and price trends.</p>
+            </div>
+            
+            <div class="text-center p-6 rounded-lg hover:shadow-lg transition duration-150 ease-in-out">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-shield-alt text-2xl text-purple-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Secure Trading</h3>
+                <p class="text-gray-600">Safe and secure transactions guaranteed.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Latest Products Section -->
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">Latest Products</h2>
+            <a href="{% url 'marketplace:product_list' %}" 
+               class="text-green-600 hover:text-green-700 font-semibold">
+                View All <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for product in latest_products %}
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-150 ease-in-out">
+                    <div class="relative">
+                        {% if product.get_main_image %}
+                            <img src="{{ product.get_main_image.image.url }}" 
+                                 alt="{{ product.name }}" 
+                                 class="w-full h-48 object-cover">
+                        {% else %}
+                            <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                                <i class="fas fa-image text-4xl text-gray-400"></i>
+                            </div>
+                        {% endif %}
+                        {% if product.is_featured %}
+                            <span class="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 rounded text-xs font-semibold">
+                                Featured
+                            </span>
+                        {% endif %}
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ product.name }}</h3>
+                        <p class="text-gray-600 text-sm mb-2 line-clamp-2">{{ product.description|truncatewords:15 }}</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-2xl font-bold text-green-600">{{ product.get_price_display }}</span>
+                            <span class="text-sm text-gray-500">{{ product.location }}</span>
+                        </div>
+                        <div class="mt-3 flex justify-between items-center">
+                            <span class="text-sm text-gray-500">by {{ product.seller.get_full_name }}</span>
+                            <a href="{{ product.get_absolute_url }}" 
+                               class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition duration-150 ease-in-out">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-span-full text-center py-12">
+                    <i class="fas fa-box-open text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600">No products available yet.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Forum Threads Section -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">Community Discussions</h2>
+            <a href="{% url 'forum:thread_list' %}" 
+               class="text-green-600 hover:text-green-700 font-semibold">
+                View All <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+        
+        <div class="space-y-4">
+            {% for thread in top_threads %}
+                <div class="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 transition duration-150 ease-in-out">
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0">
+                            {% if thread.author.profile_image %}
+                                <img src="{{ thread.author.profile_image.url }}" 
+                                     alt="{{ thread.author.get_full_name }}" 
+                                     class="w-12 h-12 rounded-full object-cover">
+                            {% else %}
+                                <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-semibold">{{ thread.author.first_name.0 }}{{ thread.author.last_name.0 }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <h3 class="text-lg font-semibold text-gray-900">
+                                    <a href="{{ thread.get_absolute_url }}" class="hover:text-green-600">
+                                        {{ thread.title }}
+                                    </a>
+                                </h3>
+                                {% if thread.is_pinned %}
+                                    <i class="fas fa-thumbtack text-green-600"></i>
+                                {% endif %}
+                            </div>
+                            <p class="text-gray-600 mb-2">{{ thread.content|truncatewords:20 }}</p>
+                            <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                <span>by {{ thread.author.get_full_name }}</span>
+                                <span>{{ thread.created_at|timesince }} ago</span>
+                                <span>{{ thread.get_post_count }} replies</span>
+                                <span>{{ thread.view_count }} views</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="text-center py-12">
+                    <i class="fas fa-comments text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600">No discussions yet. Be the first to start a conversation!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-16 bg-green-600 text-white">
+    <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold mb-4">Ready to Get Started?</h2>
+        <p class="text-xl text-green-100 mb-8 max-w-2xl mx-auto">
+            Join thousands of farmers and buyers who trust AgroMarket for their agricultural needs.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            {% if not user.is_authenticated %}
+                <a href="{% url 'users:register' %}" 
+                   class="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-green-50 transition duration-150 ease-in-out">
+                    <i class="fas fa-user-plus mr-2"></i>
+                    Create Account
+                </a>
+            {% endif %}
+            <a href="{% url 'marketplace:product_list' %}" 
+               class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition duration-150 ease-in-out">
+                <i class="fas fa-store mr-2"></i>
+                Start Shopping
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

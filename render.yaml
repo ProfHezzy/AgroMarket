@@ -1,0 +1,80 @@
+# render.yaml
+# This file configures the services for the AgroMarket project on Render.
+
+services:
+  # 1. PostgreSQL Database
+  - name: agromarket-db
+    type: psql
+    plan: free
+    # Free instances are deleted after 90 days.
+    # Upgrade to a paid plan for production use.
+    psqlVersion: 15
+    properties:
+      - key: max_connections
+        value: 100
+
+  # 2. Redis Cache
+  - name: agromarket-redis
+    type: redis
+    plan: free
+    # Free instances have 25MB memory limit.
+    properties:
+      - key: maxmemoryPolicy
+        value: allkeys-lru
+
+  # 3. Django Web Service (Gunicorn)
+  - name: agromarket-web
+    type: web
+    plan: free
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn config.wsgi:application"
+    healthCheckPath: /
+    envVars:
+      - key: DATABASE_URL
+        fromService:
+          type: psql
+          name: agromarket-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: agromarket-redis
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: '3.12.0'
+      - key: DJANGO_SETTINGS_MODULE
+        value: 'config.settings.production'
+      - key: SECRET_KEY
+        generateValue: true # Render will generate a random secret key
+      - key: DEBUG
+        value: 'False'
+  # 4. Celery Background Worker
+  - name: agromarket-worker
+    type: worker
+    plan: free
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "celery -A config worker --loglevel=info"
+    envVars:
+      - key: DATABASE_URL
+        fromService:
+          type: psql
+          name: agromarket-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: agromarket-redis
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: '3.12.0'
+      - key: DJANGO_SETTINGS_MODULE
+        value: 'config.settings.production'
+      - key: SECRET_KEY
+        fromService:
+          type: web
+          name: agromarket-web
+          envVarKey: SECRET_KEY
+      - key: DEBUG
+        value: 'False'
